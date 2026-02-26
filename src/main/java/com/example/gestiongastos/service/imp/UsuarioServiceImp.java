@@ -85,5 +85,16 @@ public class UsuarioServiceImp implements UsuarioService {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
+    @Override
+    public void updatePassword(Long userId, String newPassword) {
+        Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // Usamos el passwordEncoder que ya tenés inyectado en esta clase
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+        
+        usuarioRepository.save(usuario);
+    }
 }
+
 

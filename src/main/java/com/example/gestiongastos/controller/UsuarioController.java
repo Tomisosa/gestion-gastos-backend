@@ -67,5 +67,14 @@ public class UsuarioController {
     }
 
 
-
+@org.springframework.web.bind.annotation.PutMapping("/update-password")
+    public ResponseEntity<String> updatePassword(@RequestBody java.util.Map<String, String> req) {
+        Long userId = Long.parseLong(req.get("userId"));
+        String newPassword = req.get("newPassword");
+        
+        usuarioService.updatePassword(userId, newPassword);
+        
+        return ResponseEntity.ok("Contraseña actualizada con éxito");
+    }
 }
+

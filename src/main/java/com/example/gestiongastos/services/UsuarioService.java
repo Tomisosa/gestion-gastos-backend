@@ -6,18 +6,11 @@ import com.example.gestiongastos.dto.Response.UsuarioResponse;
 import com.example.gestiongastos.model.Usuario;
 
 public interface UsuarioService {
-
-	UsuarioResponse register(UsuarioRegisterRequestDto request);
-    UsuarioResponse login(UsuarioLoginRequest request); // para MVP básico
+    UsuarioResponse register(UsuarioRegisterRequestDto request);
+    UsuarioResponse login(UsuarioLoginRequest request);
     UsuarioResponse findById(Long id);
-	Usuario findByEmail(String email);
+    Usuario findByEmail(String email);
+    
+    // Agregamos esta línea para que el Controller la vea
+    void updatePassword(Long userId, String newPassword); 
 }
-public void updatePassword(Long userId, String newPassword) {
-        Usuario usuario = usuarioRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        
-        // Encriptamos la clave usando el mismo encoder que usás en el register
-        usuario.setPassword(passwordEncoder.encode(newPassword));
-        
-        usuarioRepository.save(usuario);
-    }

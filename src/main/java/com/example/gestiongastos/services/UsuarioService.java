@@ -12,3 +12,12 @@ public interface UsuarioService {
     UsuarioResponse findById(Long id);
 	Usuario findByEmail(String email);
 }
+public void updatePassword(Long userId, String newPassword) {
+        Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        // Encriptamos la clave usando el mismo encoder que usás en el register
+        usuario.setPassword(passwordEncoder.encode(newPassword));
+        
+        usuarioRepository.save(usuario);
+    }

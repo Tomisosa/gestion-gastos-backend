@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-primario: #00bcd4;
+  --color-whatsapp: #25D366; /* Verde tipo WhatsApp */
+  --negro: #0e0e0e;
+  --gris-oscuro: #1c1c1c;
+  --gris: #2e2e2e;
+  --gris-claro: #cfcfcf;
+  --blanco: #ffffff;
+}
+
+/* ==== GENERAL & LAYOUT ==== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--negro);
+  color: var(--blanco);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app { display: flex; height: 100vh; }
+.sidebar { width: 240px; background-color: var(--gris-oscuro); display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem; }
+.sidebar .brand { text-align: center; font-weight: 700; font-size: 1.4rem; color: var(--color-primario); }
+.nav-list { list-style: none; margin-top: 2rem; }
+.nav-item { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; cursor: pointer; transition: background 0.2s ease; font-weight: 500; }
+.nav-item:hover { background-color: var(--gris); }
+.nav-item.active { background-color: var(--color-primario); color: var(--negro); font-weight: 600; }
+.nav-item.logout { margin-top: 1rem; color: var(--gris-claro); }
+.main { flex: 1; background-color: var(--negro); display: flex; flex-direction: column; }
+.content { flex: 1; overflow-y: auto; padding: 2rem; position: relative; }
+
+/* ==== PESTAÑAS ==== */
+.page { display: none; animation: fadeIn 0.4s ease; }
+.page.visible { display: block; }
+
+/* ==== PANELES Y TARJETAS ==== */
+.panel, .card { background-color: var(--gris-oscuro); border-radius: 12px; padding: 1.5rem; box-shadow: 0 0 15px rgba(0,0,0,0.3); margin-bottom: 2rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+.card h3 { font-size: 1rem; color: var(--gris-claro); }
+.card .highlight { font-size: 1.6rem; font-weight: 600; margin-top: 0.5rem; color: var(--color-primario); }
+.table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.table th, .table td { padding: 0.8rem; text-align: left; border-bottom: 1px solid var(--gris); }
+.table th { color: var(--gris-claro); font-weight: 600; }
+.form label { display: block; margin-bottom: 1rem; }
+.form input, .form select { margin-top: 0.4rem; width: 100%; padding: 8px; border-radius: 4px; border: none; }
+.badge-categoria { background: #333; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; border: 1px solid #555; display: inline-block; white-space: nowrap; }
+.highlight.positivo { color: #2e7d32; }
+.highlight.negativo { color: #c62828; }
+.btn { background-color: var(--color-primario); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+
+/* ==== BOTÓN FLOTANTE (ESTILO WHATSAPP) ==== */
+.fab-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end; /* Alinea todo a la derecha */
+    gap: 15px;
+    z-index: 2000;
+}
+
+.fab-main {
+    width: 65px;
+    height: 65px;
+    background-color: var(--color-whatsapp); /* Verde fuerte */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.fab-main:hover {
+    transform: scale(1.1) rotate(90deg); /* Efecto giratorio */
+    background-color: #20b858;
+}
+
+/* Contenedor de las opciones (oculto por defecto) */
+.fab-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Alinea los items a la derecha */
+    gap: 15px;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.fab-options.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+/* Fila de cada opción (Texto + Botón pequeño) */
+.fab-label-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+/* El texto blanco (la etiqueta) */
+.fab-label {
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    pointer-events: none; /* Para que el clic pase al contenedor */
+}
+
+/* El botoncito redondo pequeño */
+.fab-mini-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+
+.fab-mini-btn:hover {
+    transform: scale(1.1);
+}
+
+/* ==== MODALES ==== */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 3000; animation: fadeIn 0.3s ease; }
+.modal-content { background-color: var(--gris-oscuro); margin: 2% auto; padding: 20px; border: 1px solid #333; width: 90%; max-width: 500px; border-radius: 12px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+.close { position: absolute; top: 1rem; right: 1rem; font-size: 1.5rem; color: var(--gris-claro); cursor: pointer; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 1rem; border-radius: 8px; display: none; z-index: 4000; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 768px) {
+  .app { flex-direction: column; height: auto; }
+  .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 1rem; }
+  .fab-container { bottom: 20px; right: 20px; }
+}
+
+/* ==== PÁGINAS DE INICIO, LOGIN Y REGISTRO ==== */
+.inicio, .auth {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Estilos específicos del Index */
+.inicio header h1 {
+  font-size: 3.5rem;
+  color: var(--color-primario);
+  margin-bottom: 1rem;
+}
+
+.inicio main h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.inicio main p {
+  color: var(--gris-claro);
+  margin-bottom: 2.5rem;
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.acciones {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Ajustes para que los enlaces <a> parezcan botones reales */
+.btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-secundario {
+  background-color: transparent;
+  border: 2px solid var(--color-primario);
+  color: var(--color-primario);
+}
+
+.btn-secundario:hover {
+  background-color: var(--color-primario);
+  color: var(--blanco);
+}
+
+/* Estilos de las cajas de Login y Registro */
+.form-container {
+  background-color: var(--gris-oscuro);
+  padding: 3rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-container h2 {
+  color: var(--color-primario);
+  margin-bottom: 15px;
+  font-size: 2rem;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--gris);
+  background-color: var(--negro);
+  color: var(--blanco);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+}
+
+.form-container input:focus {
+  border-color: var(--color-primario);
+}
+
+.form-container p {
+  margin-top: 20px;
+  color: var(--gris-claro);
+  font-size: 0.95rem;
+}
+
+.form-container a {
+  color: var(--color-primario);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.form-container a:hover {
+  text-decoration: underline;
+}

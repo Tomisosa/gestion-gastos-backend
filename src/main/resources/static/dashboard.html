@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Gestión de Gastos</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><h1>💰 Gastos</h1></div>
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item active" data-section="inicio">🏠 Inicio</li>
+          <li class="nav-item" data-section="proyeccion">🎯 Proyección</li>
+          <li class="nav-item" data-section="ver-gastos">💸 Gastos</li>
+          <li class="nav-item" data-section="ver-ingresos">💵 Ingresos</li>
+          <li class="nav-item" data-section="ahorros">🐷 Ahorros</li>
+          <li class="nav-item" data-section="tarjetas">💳 Tarjetas</li>
+          <li class="nav-item logout" id="logoutBtn">🚪 Cerrar sesión</li>
+        </ul>
+      </nav>
+      <footer class="sidebar-footer"><small id="userEmail">—</small></footer>
+    </aside>
+
+    <main class="main">
+      <section class="content">
+        
+        <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; background: #1a1a1a; padding: 10px; border-radius: 8px; width: fit-content;">
+            <label style="color: #888; font-weight: bold;">📅 Mes:</label>
+            <select id="filtroFechaMes" style="background: #333; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; outline: none;"></select>
+        </div>
+
+        <div id="inicio" class="page visible">
+          <div class="wallet-cards" style="display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 10px;">
+             <div class="card-small" style="min-width: 160px; background: #1a1a1a; padding: 15px; border-radius: 12px; border-left: 4px solid #2ac9bb;">
+               <h4 style="color: #888; font-size: 0.8rem; margin: 0;">🏦 BNA</h4><p id="saldoBNA" style="font-size: 1.3rem; font-weight: bold; color: #2ac9bb; margin: 5px 0 0 0;">$0.00</p>
+             </div>
+             <div class="card-small" style="min-width: 160px; background: #1a1a1a; padding: 15px; border-radius: 12px; border-left: 4px solid #00aae4;">
+               <h4 style="color: #888; font-size: 0.8rem; margin: 0;">📱 Mercado Pago</h4><p id="saldoMP" style="font-size: 1.3rem; font-weight: bold; color: #00aae4; margin: 5px 0 0 0;">$0.00</p>
+             </div>
+             <div class="card-small" style="min-width: 160px; background: #1a1a1a; padding: 15px; border-radius: 12px; border-left: 4px solid #ffce56;">
+               <h4 style="color: #888; font-size: 0.8rem; margin: 0;">💵 Efectivo</h4><p id="saldoEfectivo" style="font-size: 1.3rem; font-weight: bold; color: #ffce56; margin: 5px 0 0 0;">$0.00</p>
+             </div>
+          </div>
+          <div class="cards">
+            <div class="card"><h3>Balance Total</h3><p id="balanceTotal" class="highlight">$0.00</p></div>
+            <div class="card"><h3>Total gastado</h3><p id="totalGastado" class="highlight">$0.00</p></div>
+            <div class="card">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Categorías</h3>
+                <button id="btnGestionarCategorias" title="Gestionar categorías" style="background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 0;">⚙️</button>
+              </div>
+              <div style="display: flex; justify-content: flex-start; width: 100%; margin-top: 10px;">
+                <p id="countCategorias" class="highlight" style="margin: 0;">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ver-gastos" class="page">
+            <div class="panel" style="margin-bottom: 2rem;">
+                <h3>Gráfico de Gastos</h3>
+                <div style="max-width: 350px; margin: auto;"><canvas id="gastosChart"></canvas></div>
+            </div>
+            <div class="filter-controls" style="margin-bottom: 1.5rem;">
+                <label>Filtrar por Categoría: <select id="filtroCategoriaSelect"><option value="all">Mostrar todas</option></select></label>
+            </div>
+            <div class="panel" style="border-left: 5px solid #ffce56; margin-bottom: 2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>🔒 Gastos FIJOS</h3>
+                    <h3 id="totalFijos" style="color: #ffce56;">$0.00</h3>
+                </div>
+                <div class="table-wrapper"><table id="tablaGastosFijos" class="table"><thead><tr><th>Concepto</th><th>Monto</th><th>Vencimiento</th><th>Categoría</th><th>¿Pagado?</th><th>Fecha Pago</th><th>Medio</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+            </div>
+            <div class="panel" style="border-left: 5px solid #2ac9bb;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h3>🛒 Gastos VARIABLES</h3>
+                    <h3 id="totalVariables" style="color: #2ac9bb;">$0.00</h3>
+                </div>
+                <div class="table-wrapper"><table id="tablaGastosVariables" class="table"><thead><tr><th>Fecha</th><th>Concepto</th><th>Categoría</th><th>Medio</th><th>Monto</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+            </div>
+        </div>
+
+        <div id="ver-ingresos" class="page">
+          <div class="panel">
+            <h3>Mis Ingresos</h3>
+            <div class="table-wrapper"><table id="tablaIngresos" class="table"><thead><tr><th>Fecha</th><th>Descripción</th><th>Medio</th><th>Categoría</th><th>Monto</th><th>Acciones</th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </div>
+
+        <div id="ahorros" class="page"><div class="panel"><h3>🐷 Mis Ahorros</h3><p style="color:#888;">Próximamente...</p></div></div>
+        <div id="tarjetas" class="page"><div class="panel"><h3>💳 Mis Tarjetas</h3><p style="color:#888;">Próximamente...</p></div></div>
+
+        <div class="fab-container">
+            <div class="fab-options" id="fabOptions">
+                <div class="fab-label-container" id="btnFabIngreso">
+                    <span class="fab-label">Agregar Ingreso</span>
+                    <button class="fab-mini-btn" style="color: #2ac9bb;">
+                        <span class="material-icons">attach_money</span>
+                    </button>
+                </div>
+                
+                <div class="fab-label-container" id="btnFabGasto">
+                    <span class="fab-label">Agregar Gasto</span>
+                    <button class="fab-mini-btn" style="color: #ff6384;">
+                        <span class="material-icons">shopping_cart</span>
+                    </button>
+                </div>
+            </div>
+
+            <button class="fab-main" id="fabMain">
+                <span class="material-icons" style="font-size: 32px;">add</span>
+            </button>
+        </div>
+
+        <div id="modalGasto" class="modal">
+            <div class="modal-content">
+              <span class="close" id="closeModal">&times;</span>
+              <h3>Agregar Gasto</h3>
+              <form id="formGasto" class="form">
+                <input type="hidden" id="gastoId" value="">
+                <div style="margin: 10px 0; background: #333; padding: 10px; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
+                  <input type="checkbox" id="gastoEsFijo" style="width: 20px; height: 20px; accent-color: #ffce56;">
+                  <label for="gastoEsFijo" style="margin:0; cursor:pointer;">🔒 ¿Es Gasto FIJO?</label>
+                </div>
+                <label>Concepto <input id="gastoDescripcion" type="text" /></label>
+                <label>Monto <input id="gastoMonto" type="number" step="0.01" required /></label>
+                <div id="camposFijos" style="display: none; background: #222; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid #ffce56;">
+                    <label>📅 Fecha Vencimiento <input id="gastoVencimiento" type="date" /></label>
+                    <label style="display:flex; gap:10px; margin-top:5px;"><input type="checkbox" id="gastoPagado"> ¿Ya está Pagado?</label>
+                </div>
+                <label>Fecha de Pago <input id="gastoFecha" type="date" required /></label>
+                <label>Categoría <select id="gastoCategoria"></select></label>
+                <label>Medio de Pago <select id="gastoMedio" required><option value="BNA">🏦 BNA</option><option value="MERCADO_PAGO">📱 Mercado Pago</option><option value="EFECTIVO">💵 Efectivo</option><option value="CF">🧾 CF</option></select></label>
+                <button type="submit" class="btn">Guardar</button>
+              </form>
+            </div>
+        </div>
+        
+        <div id="modalIngreso" class="modal">
+          <div class="modal-content"><span class="close" id="closeIngreso">&times;</span><h3>Agregar Ingreso</h3>
+            <form id="formIngreso" class="form"><input type="hidden" id="ingresoId" value=""><label>Descripción <input id="ingresoDescripcion" type="text" /></label><label>Monto <input id="ingresoMonto" type="number" step="0.01" required /></label><label>Acreditar en <select id="ingresoMedio" required><option value="BNA">🏦 BNA</option><option value="MERCADO_PAGO">📱 Mercado Pago</option><option value="EFECTIVO">💵 Efectivo</option></select></label><label>Fecha <input id="ingresoFecha" type="date" required /></label><label>Categoría <select id="ingresoCategoria"></select></label><button type="submit" class="btn">Guardar</button></form>
+          </div>
+        </div>
+        
+        <div id="modalCategorias" class="modal">
+            <div class="modal-content"><span class="close" id="closeCategorias">&times;</span><h3>Categorías</h3><div class="categoria-form"><input id="categoriaNombre" placeholder="Nueva categoría" /><button id="btnCrearCategoria" class="btn">Crear</button></div><ul id="listaCategorias" class="list" style="list-style: none; margin-top: 15px; padding: 0;"></ul></div>
+       </div>
+
+       <div id="modalProyeccion" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+          <span class="close" id="closeProyeccion">&times;</span><h3>🎯 Proyección Mensual (50/30/20)</h3><p style="color: #888; margin-bottom: 20px;">Análisis basado en tus Ingresos de este mes.</p><table class="table" style="margin-bottom: 20px;"><thead><tr><th>Concepto</th><th>Ideal (%)</th><th>Tope Sugerido</th><th>Real Gastado</th><th>Estado</th></tr></thead><tbody id="tablaProyeccionBody"></tbody></table><div style="background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;"><h4 style="margin-bottom: 10px;">💳 Resumen de Cuentas</h4><div style="display: flex; justify-content: space-between; border-bottom: 1px solid #444; padding: 5px 0;"><span>🏦 BNA:</span> <span id="resumenBNA" style="font-weight: bold; color: #2ac9bb;">$0.00</span></div><div style="display: flex; justify-content: space-between; border-bottom: 1px solid #444; padding: 5px 0;"><span>📱 Mercado Pago:</span> <span id="resumenMP" style="font-weight: bold; color: #00aae4;">$0.00</span></div><div style="display: flex; justify-content: space-between; padding: 5px 0;"><span>💵 Efectivo:</span> <span id="resumenEfectivo" style="font-weight: bold; color: #ffce56;">$0.00</span></div></div>
+        </div>
+      </div>
+      <div id="message" class="toast"></div>
+      </section>
+    </main>
+  </div>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
